@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <v-app>
-      <v-toolbar app></v-toolbar>
+      <page-header></page-header>
       <v-content>
-        <v-container fluid>
+        <v-container fluid fill-height>
           <router-view></router-view>
         </v-container>
       </v-content>
@@ -13,7 +13,12 @@
 </template>
 
 <script>
+import PageHeader from './components/Header'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    PageHeader
+  }
 }
 </script>
