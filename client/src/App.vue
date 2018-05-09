@@ -3,7 +3,7 @@
     <v-app>
       <page-header></page-header>
       <v-content>
-        <v-container fluid fill-height class="spacer-container">
+        <v-container fluid fill-height>
           <router-view></router-view>
         </v-container>
       </v-content>
@@ -26,7 +26,4 @@ export default {
 </script>
 
 <style>
-  .spacer-container {
-    padding-top: 75px;
-  }
 </style>

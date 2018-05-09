@@ -1,12 +1,6 @@
 <template>
   <v-layout>
-    <v-dialog
-      v-model="dialog"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition">
-      <create-song-dialog v-model="dialog"></create-song-dialog>
-    </v-dialog>
+    <create-song-dialog :visible="showCreateSongDialog" @close="showCreateSongDialog = false" />
     <v-flex xs12 sm8 md6 lg4 offset-sm2 offset-md3 offset-lg4>
       <v-card>
         <v-toolbar flat dense dark color="pink">
@@ -15,7 +9,8 @@
         <v-container
         fluid
         style="min-height: 0;"
-        grid-list-lg>
+        grid-list-lg
+        class="grey lighten-4">
           <v-layout row wrap>
             <v-flex
               xs12
@@ -43,6 +38,18 @@
             </v-flex>
           </v-layout>
         </v-container>
+        <v-card-text style="height: 48px; position: relative">
+          <v-btn
+            absolute
+            dark
+            fab
+            top
+            right
+            color="info"
+            @click.stop="showCreateSongDialog = true">
+            <v-icon>add</v-icon>
+          </v-btn>
+        </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
@@ -57,7 +64,7 @@ export default {
   data () {
     return {
       songs: null,
-      dialog: false
+      showCreateSongDialog: false
     }
   },
   methods: {
