@@ -1,111 +1,131 @@
 <template>
   <v-dialog
-    v-model="show"
+    v-model="$store.state.createDialogOpen"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition">
     <v-card>
-      <v-toolbar dark color="primary">
-        <v-btn icon dark @click.stop="show = false">
+      <v-toolbar dark color="deep-purple">
+        <v-btn icon dark @click.stop="closeDialog">
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title>Create New Song</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark flat @click.stop="show = false">Save</v-btn>
+          <!-- <v-btn dark flat @click.stop="show = false">Save</v-btn> -->
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text>
         <v-container>
-          <v-layout wrap>
-            <v-flex xs12 md6>
-              <v-container>
-                <v-subheader class="px-0">
-                  General Song Info
-                </v-subheader>
-                <v-layout row>
-                  <v-flex xs4>
-                    <v-subheader>
-                      Title
-                    </v-subheader>
-                  </v-flex>
-                  <v-flex xs8>
-                    <v-text-field
-                      color="blue"
-                      name="title"
-                      v-model="title"
-                      label="Song title"
-                      required>
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-text-field
-                  color="blue"
-                  name="artist"
-                  v-model="artist"
-                  label="Artist"
-                  required>
-                </v-text-field>
-                <v-text-field
-                  color="blue"
-                  name="album"
-                  v-model="album"
-                  label="Album"
-                  required>
-                </v-text-field>
-                <v-select
-                  color="blue"
-                  :items="genres"
-                  v-model="genre"
-                  label="Genre"
-                  single-line
-                  auto
-                  hint="Select the most suitable genre for this song"
-                  persistent-hint
-                ></v-select>
-              </v-container>
-            </v-flex>
-            <v-flex xs12 md6>
-              <v-container>
-                <v-subheader class="px-0">
-                  Song Details + Media
-                </v-subheader>
-                <v-text-field
-                  color="blue"
-                  name="title"
-                  v-model="title"
-                  label="Song title"
-                  required>
-                </v-text-field>
-                <v-text-field
-                  color="blue"
-                  name="artist"
-                  v-model="artist"
-                  label="Artist"
-                  required>
-                </v-text-field>
-                <v-text-field
-                  color="blue"
-                  name="youtubeId"
-                  v-model="youtubeId"
-                  label="Youtube ID"
-                  hint='Everything after "v=" in the YouTube URL'
-                  required>
-                </v-text-field>
-                <v-select
-                  :items="genres"
-                  v-model="genre"
-                  label="Genre"
-                  single-line
-                  auto
-                  hint="Select the most suitable genre for this song"
-                  persistent-hint
-                  required
-                ></v-select>
-              </v-container>
-            </v-flex>
-            <small>*indicates required field</small>
-          </v-layout>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-layout wrap>
+              <v-flex xs12 md6>
+                <v-container>
+                  <v-subheader class="px-0">
+                    Song Metadata
+                  </v-subheader>
+                  <v-text-field
+                    color="blue"
+                    name="title"
+                    v-model="song.title"
+                    :rules="rules.generic"
+                    label="Song title"
+                    placeholder="Fight the Power"
+                    required>
+                  </v-text-field>
+                  <v-text-field
+                    color="blue"
+                    name="artist"
+                    v-model="song.artist"
+                    :rules="rules.generic"
+                    label="Artist"
+                    placeholder="Public Enemy"
+                    required>
+                  </v-text-field>
+                  <v-text-field
+                    color="blue"
+                    name="album"
+                    v-model="song.album"
+                    :rules="rules.generic"
+                    label="Album"
+                    placeholder="Fear of a Black Planet"
+                    required>
+                  </v-text-field>
+                  <v-select
+                    color="blue"
+                    :items="genres"
+                    v-model="song.genre"
+                    :rules="rules.generic"
+                    label="Genre"
+                    auto
+                    autocomplete
+                    hint="Select the most suitable genre for this song"
+                    persistent-hint
+                    required
+                  ></v-select>
+                </v-container>
+              </v-flex>
+              <v-flex xs12 md6>
+                <v-container>
+                  <v-subheader class="px-0">
+                    Song Details + Media
+                  </v-subheader>
+                  <v-text-field
+                    color="blue"
+                    name="albumImageUrl"
+                    v-model="song.albumImageUrl"
+                    :rules="rules.generic"
+                    label="Album image URL"
+                    required>
+                  </v-text-field>
+                  <v-text-field
+                    color="blue"
+                    name="youtubeId"
+                    v-model="song.youtubeId"
+                    :rules="rules.generic"
+                    label="Youtube ID"
+                    hint='Everything after "v=" in the YouTube URL'
+                    required>
+                  </v-text-field>
+                  <v-text-field
+                    color="blue"
+                    name="lyrics"
+                    v-model="song.lyrics"
+                    :rules="rules.generic"
+                    label="Lyrics (optional}"
+                    placeholder="Enter song lyrics in this field"
+                    multi-line>
+                  </v-text-field>
+                </v-container>
+              </v-flex>
+            </v-layout>
+            <v-card-actions>
+              <v-btn
+                :loading="loading"
+                @click="submit"
+                dark
+                color="deep-purple">
+                create song
+              </v-btn>
+              <v-slide-x-transition>
+                <v-tooltip
+                  v-if="!valid"
+                  right>
+                  <v-btn
+                    slot="activator"
+                    icon
+                    class="my-0"
+                    @click="clear">
+                    <v-icon>refresh</v-icon>
+                  </v-btn>
+                  <span>Refresh form</span>
+                </v-tooltip>
+              </v-slide-x-transition>
+            </v-card-actions>
+            <div>
+              <small>*indicates required field</small>
+            </div>
+          </v-form>
         </v-container>
       </v-card-text>
     </v-card>
@@ -113,19 +133,25 @@
 </template>
 
 <script>
+import SongsService from '@/services/SongsService'
 export default {
-  props: ['visible'],
   data () {
     return {
-      dialog: false,
-      title: null,
-      artist: null,
-      genre: null,
-      album: null,
-      albumImageUrl: null,
-      youtubeId: null,
-      lyrics: null,
-      tab: null,
+      valid: true,
+      rules: {
+        generic: [v => !!v || 'This field is required']
+      },
+      loading: false,
+      song: {
+        title: null,
+        artist: null,
+        genre: null,
+        album: null,
+        albumImageUrl: null,
+        youtubeId: null,
+        lyrics: null,
+        tab: null
+      },
       genres: [
         'Acapella', 'Acoustic', 'Alternative', 'Alternative Rock', 'Ambient',
         'Avantgarde', 'Ballad', 'Bass', 'Big Band', 'Bluegrass', 'Blues', 'Celtic',
@@ -142,15 +168,38 @@ export default {
       ]
     }
   },
-  computed: {
-    show: {
-      get () {
-        return this.visible
-      },
-      set (value) {
-        if (!value) {
-          this.$emit('close')
-        }
+  methods: {
+    closeDialog () {
+      this.$store.dispatch('toggleCreateSongDialog')
+      this.clear()
+    },
+    submit () {
+      if (this.$refs.form.validate()) {
+        this.createSong()
+      }
+    },
+    clear () {
+      this.$refs.form.reset()
+    },
+    async createSong () {
+      try {
+        this.loading = true
+
+        const song = (await SongsService.post(this.song)).data
+
+        this.$router.push({
+          name: 'song',
+          params: {
+            songId: song.id
+          }
+        })
+
+        setTimeout(() => {
+          this.loading = false
+          this.closeDialog()
+        }, 200)
+      } catch (err) {
+        console.error(err)
       }
     }
   }

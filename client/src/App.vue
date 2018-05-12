@@ -2,10 +2,11 @@
   <div id="app">
     <v-app>
       <page-header></page-header>
+      <create-song-dialog></create-song-dialog>
       <v-content>
-        <v-container fluid fill-height>
+        <transition name="fade" mode="out-in">
           <router-view></router-view>
-        </v-container>
+        </transition>
       </v-content>
       <page-footer></page-footer>
     </v-app>
@@ -15,15 +16,37 @@
 <script>
 import PageHeader from './components/Header'
 import PageFooter from './components/Footer'
+import CreateSongDialog from './components/CreateSong'
 
 export default {
   name: 'App',
   components: {
     PageHeader,
-    PageFooter
+    PageFooter,
+    CreateSongDialog
   }
 }
 </script>
 
 <style>
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: opacity 200ms cubic-bezier(0.5, 0.08, 0, 1);
+}
+
+.fade-leave-active {
+  transition: opacity 200ms cubic-bezier(0.5, 0.08, 0, 1);
+  opacity: 0;
+}
+
+.text--white-translucent {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.text--black-translucent {
+  color: rgba(0, 0, 0, 0.7);
+}
 </style>

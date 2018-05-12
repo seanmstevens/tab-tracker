@@ -4,12 +4,26 @@ module.exports = {
   async index (req, res) {
     try {
       const songs = await Song.findAll({
+        order: [
+          ['id', 'DESC']
+        ],
         limit: 10
       })
       res.send(songs)
     } catch (err) {
       res.status(500).send({
         error: 'An error occurred while trying to fetch songs.'
+      })
+    }
+  },
+  async show (req, res) {
+    try {
+      console.log(req.params)
+      const song = await Song.findById(req.params.songId)
+      res.send(song)
+    } catch (err) {
+      res.status(500).send({
+        error: 'An error occurred while trying song details.'
       })
     }
   },

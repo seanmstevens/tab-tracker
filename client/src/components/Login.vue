@@ -1,44 +1,46 @@
 <template>
-  <v-layout row>
-    <v-flex xs12 sm8 md4 class="mx-auto">
-      <div class="white elevation-2">
-        <v-toolbar flat dense dark color="primary">
-          <v-toolbar-title class="registration-title">Login</v-toolbar-title>
-        </v-toolbar>
-        <div class="px-4 py-2">
-          <v-text-field
-            color="blue"
-            name="email"
-            v-model="email"
-            label="Email"
-          ></v-text-field>
-          <v-text-field
-            color="blue"
-            :append-icon="e1 ? 'visibility' : 'visibility_off'"
-            :append-icon-cb="() => (e1 = !e1)"
-            :type="e1 ? 'text' : 'password'"
-            name="password"
-            v-model="password"
-            label="Password"
-          ></v-text-field>
-          <v-alert
-            v-model="alert"
-            type="error"
-            dismissible
-            transition="slide-y-reverse-transition">
-            <div v-html="error" />
-          </v-alert>
-          <div class="text-xs-center">
-            <v-btn
-              color="primary"
-              @click="login">
-              Login
-            </v-btn>
+  <v-container fill-height>
+    <v-layout row>
+      <v-flex xs12 sm8 md4 class="mx-auto">
+        <div class="white elevation-2">
+          <v-toolbar flat dense dark color="primary">
+            <v-toolbar-title class="registration-title">Login</v-toolbar-title>
+          </v-toolbar>
+          <div class="px-4 py-2">
+            <v-text-field
+              color="blue"
+              name="email"
+              v-model="email"
+              label="Email"
+            ></v-text-field>
+            <v-text-field
+              color="blue"
+              :append-icon="e1 ? 'visibility' : 'visibility_off'"
+              :append-icon-cb="() => (e1 = !e1)"
+              :type="e1 ? 'text' : 'password'"
+              name="password"
+              v-model="password"
+              label="Password"
+            ></v-text-field>
+            <v-alert
+              v-model="alert"
+              type="error"
+              dismissible
+              transition="slide-y-reverse-transition">
+              <div v-html="error" />
+            </v-alert>
+            <div class="text-xs-center">
+              <v-btn
+                color="primary"
+                @click="login">
+                Login
+              </v-btn>
+            </div>
           </div>
         </div>
-      </div>
-    </v-flex>
-  </v-layout>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
