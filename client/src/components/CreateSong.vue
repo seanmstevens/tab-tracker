@@ -91,7 +91,6 @@
                     color="blue"
                     name="lyrics"
                     v-model="song.lyrics"
-                    :rules="rules.generic"
                     label="Lyrics (optional}"
                     placeholder="Enter song lyrics in this field"
                     multi-line>
