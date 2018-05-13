@@ -35,7 +35,7 @@
         <v-layout row wrap>
           <v-flex d-flex xs12 sm6>
             <v-card class="metadata-card pb-4">
-              <v-subheader class="grey--text text--darken-1">
+              <v-subheader class="grey--text text--darken-1 px-4">
                 <v-icon class="mr-2">video_library</v-icon>
                 Music Video
               </v-subheader>
