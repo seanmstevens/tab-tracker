@@ -1,6 +1,9 @@
 <template>
   <v-toolbar fixed scroll-off-screen :scroll-threshold="300" color="primary" dark app>
-    <v-toolbar-side-icon></v-toolbar-side-icon>
+    <v-toolbar-side-icon
+      v-if="$vuetify.breakpoint.smAndDown"
+      @click="openDrawer">
+    </v-toolbar-side-icon>
     <v-toolbar-title
       @click="navigateTo({name: 'root'})"
       class="home mr-4">
@@ -8,10 +11,18 @@
     </v-toolbar-title>
     <v-toolbar-items>
       <v-btn
+        v-if="$vuetify.breakpoint.smAndUp"
         flat
         dark
         :to="{name: 'songs'}">
-        Browse
+        <span>Browse</span>
+      </v-btn>
+      <v-btn
+        v-if="$vuetify.breakpoint.smAndUp"
+        flat
+        dark
+        @click="openDialog">
+        <span>Add Song</span>
       </v-btn>
     </v-toolbar-items>
 
@@ -19,19 +30,19 @@
 
     <v-toolbar-items>
       <v-btn
-        v-if="!$store.state.isUserLoggedIn"
+        v-if="!$store.state.isUserLoggedIn && $vuetify.breakpoint.smAndUp"
         flat
         dark
         :to="{name: 'login'}">
-        Login
+        <span>Login</span>
       </v-btn>
 
       <v-btn
-        v-if="!$store.state.isUserLoggedIn"
+        v-if="!$store.state.isUserLoggedIn && $vuetify.breakpoint.smAndUp"
         flat
         dark
         :to="{name: 'register'}">
-        Sign Up
+        <span>Sign Up</span>
       </v-btn>
 
       <v-btn
@@ -39,7 +50,7 @@
         flat
         dark
         @click="logout">
-        Logout
+        <span v-if="$vuetify.breakpoint.smAndUp">Logout</span>
       </v-btn>
     </v-toolbar-items>
   </v-toolbar>
@@ -50,6 +61,12 @@ export default {
   methods: {
     navigateTo (route) {
       this.$router.push(route)
+    },
+    openDialog () {
+      this.$store.dispatch('toggleCreateSongDialog')
+    },
+    openDrawer () {
+      this.$store.dispatch('toggleNavDrawer')
     },
     logout () {
       this.$store.dispatch('setToken', null)
@@ -63,7 +80,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .home {
     cursor: pointer;

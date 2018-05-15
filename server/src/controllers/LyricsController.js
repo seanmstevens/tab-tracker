@@ -22,7 +22,6 @@ Genius.prototype.fetchSongUrl = function (songTitle, artistName) {
       for (let i = 0; i < response.hits.length; i++) {
         const hit = response.hits[i]
         if (hit.type === 'song' && normalizeParam(hit.result.primary_artist.name) === normalizedName) {
-          console.log(hit)
           return hit.result
         }
         console.error(`Unable to find a match for ${artistName} - ${songTitle}`)
@@ -43,11 +42,9 @@ Genius.prototype.getSongLyrics = geniusUrl => (
 )
 
 const parseSongHtml = htmlText => {
-  const $ = cheerio.load(htmlText, {
-    normalizeWhitespace: true
-  })
-
+  const $ = cheerio.load(htmlText)
   const lyrics = $('.lyrics').text()
+
   return lyrics
 }
 
@@ -68,15 +65,23 @@ module.exports = {
   async fetchLyrics (req, res) {
     try {
       const { songTitle, artistName } = req.query
+      let lyricsUrl
       const lyrics = await genius.fetchSongUrl(songTitle, artistName)
-        .then(url => genius.getSongLyrics(url))
+        .then(url => {
+          lyricsUrl = url
+          return genius.getSongLyrics(url)
+        })
         .catch(err => {
           res.status(500).send({ error: `Unable to find a match for "${artistName} - ${songTitle}"` })
           console.log('inFetchLyrics', err)
         })
 
-      res.send({ lyrics: lyrics.trim() })
+      res.send({
+        lyrics: lyrics.trim(),
+        url: lyricsUrl
+      })
     } catch (err) {
+      console.log(err)
       res.status(500).send({
         error: 'Unable to fetch lyrics.'
       })

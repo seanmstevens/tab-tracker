@@ -56,8 +56,8 @@
                     :items="genres"
                     v-model="song.genre"
                     :rules="rules.generic"
+                    dense
                     label="Genre"
-                    auto
                     autocomplete
                     hint="Select the most suitable genre for this song"
                     persistent-hint
@@ -80,18 +80,18 @@
                   </v-text-field>
                   <v-text-field
                     color="blue"
-                    name="youtubeId"
-                    v-model="song.youtubeId"
+                    name="youtubeUrl"
+                    v-model="song.youtubeUrl"
                     :rules="rules.generic"
-                    label="Youtube ID"
-                    hint='Everything after "v=" in the YouTube URL'
+                    label="Youtube URL"
+                    hint='Or just paste in the video ID directly'
                     required>
                   </v-text-field>
                   <v-text-field
                     color="blue"
                     name="lyrics"
                     v-model="song.lyrics"
-                    label="Lyrics (optional}"
+                    label="Lyrics (optional)"
                     placeholder="Enter song lyrics in this field"
                     multi-line>
                   </v-text-field>
@@ -147,7 +147,7 @@ export default {
         genre: null,
         album: null,
         albumImageUrl: null,
-        youtubeId: null,
+        youtubeUrl: null,
         lyrics: null,
         tab: null
       },
@@ -196,7 +196,7 @@ export default {
         setTimeout(() => {
           this.loading = false
           this.closeDialog()
-        }, 200)
+        }, 375)
       } catch (err) {
         console.error(err)
       }

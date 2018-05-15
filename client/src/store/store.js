@@ -4,12 +4,13 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  strict: true,
+  strict: false,
   state: {
     token: null,
     user: null,
     isUserLoggedIn: false,
-    createDialogOpen: false
+    createDialogOpen: false,
+    drawerOpen: false
   },
   mutations: {
     setToken (state, token) {
@@ -25,6 +26,9 @@ export default new Vuex.Store({
     },
     toggleCreateSongDialog (state) {
       state.createDialogOpen = !state.createDialogOpen
+    },
+    toggleNavDrawer (state) {
+      state.drawerOpen = !state.drawerOpen
     }
   },
   actions: {
@@ -36,6 +40,9 @@ export default new Vuex.Store({
     },
     toggleCreateSongDialog ({commit}) {
       commit('toggleCreateSongDialog')
+    },
+    toggleNavDrawer ({commit}) {
+      commit('toggleNavDrawer')
     }
   }
 })

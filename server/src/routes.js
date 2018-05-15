@@ -18,6 +18,8 @@ module.exports = (app) => {
     SongsController.show)
   app.post('/songs',
     SongsController.post)
+  app.put('/songs/:songId',
+    SongsController.put)
 
   app.get('/lyrics',
     LyricsController.fetchLyrics)

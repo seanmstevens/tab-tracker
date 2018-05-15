@@ -1,23 +1,53 @@
 <template>
   <div>
+    <v-dialog
+      :fullscreen="$vuetify.breakpoint.xs"
+      v-model="dialog"
+      width="800px"
+      lazy
+      scrollable
+      persistent>
+      <update-song-dialog
+        @cancel="dialog = false"
+        @update="updateInfo"
+        :song="song"
+      />
+    </v-dialog>
     <v-jumbotron
       dark
-      color="indigo lighten-1"
+      :color="$vuetify.breakpoint.xs ? null : 'indigo lighten-1'"
       height="auto"
-      >
+      :gradient="$vuetify.breakpoint.xs ? gradient : null"
+      :style="{ backgroundImage: 'url(' + song.albumImageUrl + ')' }"
+      class="song-jumbotron">
       <v-container fill-height class="my-3">
         <v-layout align-center>
           <v-flex
+            v-if="!$vuetify.breakpoint.xs"
             d-flex
             class="mr-3 album-image elevation-3">
-            <img
-              :src="song.albumImageUrl"
-              style="height: 125px"/>
+            <img :src="song.albumImageUrl" />
           </v-flex>
           <v-flex>
-            <h3 class="display-2">
-              {{song.title}}
-            </h3>
+            <v-flex d-flex align-start>
+              <h3 class="display-2 no-grow">
+                {{song.title}}
+              </h3>
+              <v-spacer v-if="$vuetify.breakpoint.xs"></v-spacer>
+              <v-menu bottom left class="no-grow">
+                <v-btn slot="activator" flat dark fab small middle>
+                  <v-icon medium>more_vert</v-icon>
+                </v-btn>
+                <v-list>
+                  <v-list-tile ripple @click="dialog = true">
+                    <v-list-tile-title>Edit</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile ripple>
+                    <v-list-tile-title>Bookmark</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
+            </v-flex>
             <h5 class="headline text--white-translucent">
               {{song.artist}}
             </h5>
@@ -33,21 +63,23 @@
       :class="{ 'px-0 pt-0': $vuetify.breakpoint.xs }">
       <v-container fluid grid-list-md>
         <v-layout row wrap>
-          <v-flex d-flex xs12 sm6>
-            <v-card class="metadata-card pb-4">
+          <v-flex d-flex xs12 md6>
+            <v-card class="metadata-card pb-4" v-resize="setPlayerHeight">
               <v-subheader class="grey--text text--darken-1 px-4">
                 <v-icon class="mr-2">video_library</v-icon>
                 Music Video
               </v-subheader>
               <youtube
+                ref="player"
                 :video-id="song.youtubeId"
-                :player-width="'100%'"
-                :player-height="300"
-              >
+                player-height="100%"
+                player-width="100%"
+                :style="{ height: playerHeight + 'px', width: '100%' }"
+                >
               </youtube>
             </v-card>
           </v-flex>
-          <v-flex xs12 sm6>
+          <v-flex xs12 md6>
             <v-expansion-panel>
               <v-expansion-panel-content ripple value="true">
                 <div class="body-2 grey--text text--darken-1" slot="header">
@@ -83,9 +115,15 @@
                           <small class="fetch-text">Fetching lyrics...</small>
                         </v-layout>
                       </v-flex>
-                      <div key="lyrics" v-else-if="!lyricsFetchError && song.lyrics">
-                        <p class="lyrics">{{song.lyrics}}</p>
-                        <a class="caption" href="https://genius.com" target="_blank">View lyrics on Genius</a>
+                      <div key="lyrics" v-else-if="!lyricsFetchError && retrievedLyrics.lyrics">
+                        <p class="lyrics">{{retrievedLyrics.lyrics}}</p>
+                        <a
+                          v-if="retrievedLyrics.url"
+                          class="caption"
+                          :href="retrievedLyrics.url"
+                          target="_blank">
+                          View lyrics on Genius
+                        </a>
                       </div>
                       <div key="error" v-else-if="lyricsFetchError">
                         <div class="fetch-error">{{ lyricsFetchError }}</div>
@@ -108,32 +146,70 @@
         </v-layout>
       </v-container>
     </v-container>
+    <v-snackbar
+      :timeout="4500"
+      :bottom="$vuetify.breakpoint.xs"
+      :left="!$vuetify.breakpoint.xs"
+      v-model="snackbar"
+    >
+    Song updated
+      <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import SongsService from '@/services/SongsService'
 import LyricsService from '@/services/LyricsService'
+import UpdateSongDialog from './UpdateSong'
 
 export default {
   data () {
     return {
       song: {},
+      playerHeight: 300,
       fetchingLyrics: false,
-      lyricsFetchError: null
+      retrievedLyrics: {
+        lyrics: null,
+        url: null
+      },
+      lyricsFetchError: null,
+      dialog: false,
+      snackbar: false,
+      gradient: 'to top right, rgba(63,81,181, .7), rgba(25,32,72, .7)'
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      if (from.params.songId !== to.params.songId) {
+        this.setInitialView()
+      }
     }
   },
   async mounted () {
-    const songId = this.$store.state.route.params.songId
-    this.song = (await SongsService.show(songId)).data
+    this.setInitialView()
+    this.setPlayerHeight()
   },
   methods: {
+    async setInitialView () {
+      const songId = this.$store.state.route.params.songId
+      this.song = (await SongsService.show(songId)).data
+    },
+    updateInfo (data) {
+      this.song = data
+      this.dialog = false
+      this.snackbar = true
+    },
     async fetchLyrics () {
       if (!this.song.lyrics && !this.fetchingLyrics) {
         try {
           this.fetchingLyrics = true
           const { title, artist } = this.song
-          this.song.lyrics = (await LyricsService.fetchLyrics(title, artist)).data.lyrics
+          const { lyrics, url } = (await LyricsService.fetchLyrics(title, artist)).data
+
+          this.retrievedLyrics.lyrics = lyrics
+          this.retrievedLyrics.url = url
+
           this.lyricsFetchError = null
         } catch (err) {
           this.lyricsFetchError = 'Unable to retrieve lyrics'
@@ -141,7 +217,15 @@ export default {
 
         this.fetchingLyrics = false
       }
+    },
+    setPlayerHeight () {
+      // this function ensures that the player maintains a 16:9 aspect ratio on mount and resize
+      const width = this.$refs.player.$el.clientWidth
+      this.playerHeight = (width / 16) * 9
     }
+  },
+  components: {
+    UpdateSongDialog
   }
 }
 </script>
@@ -160,10 +244,22 @@ export default {
 
 .album-image {
   flex-grow: 0;
-  border-radius: 2px;
-  overflow: hidden;
   width: 125px;
   height: 125px;
+}
+
+.album-image > img {
+  height: 125px;
+  border-radius: 2px;
+}
+
+.song-jumbotron {
+  background-size: cover;
+  background-position-y: center;
+}
+
+.no-grow {
+  flex-grow: 0 !important;
 }
 
 .fetch-text {

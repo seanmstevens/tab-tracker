@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <v-app>
+      <nav-drawer v-if="$vuetify.breakpoint.smAndDown"></nav-drawer>
       <page-header></page-header>
       <create-song-dialog></create-song-dialog>
       <v-content>
@@ -17,13 +18,15 @@
 import PageHeader from './components/Header'
 import PageFooter from './components/Footer'
 import CreateSongDialog from './components/CreateSong'
+import NavDrawer from './components/NavDrawer'
 
 export default {
   name: 'App',
   components: {
     PageHeader,
     PageFooter,
-    CreateSongDialog
+    CreateSongDialog,
+    NavDrawer
   }
 }
 </script>
