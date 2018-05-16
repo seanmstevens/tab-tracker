@@ -28,7 +28,7 @@
         key="songs"
         :items="songs"
         :pagination.sync="pagination"
-        no-data-text="No bookmarks found"
+        no-data-text="You haven't viewed any songs yet"
         content-tag="v-list"
         two-line>
         <template slot="item" slot-scope="props">

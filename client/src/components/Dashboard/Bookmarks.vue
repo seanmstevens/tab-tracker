@@ -8,7 +8,10 @@
       <v-icon>collections_bookmark</v-icon>
       <v-toolbar-title>Bookmarks</v-toolbar-title>
     </v-toolbar>
-    <transition name="fade" mode="out-in">
+    <v-flex v-if="!isUserLoggedIn" class="py-3 text-xs-center">
+      <span>Log in to start adding bookmarks!</span>
+    </v-flex>
+    <transition v-else name="fade" mode="out-in">
       <v-flex
         key="loader"
         v-if="fetchingBookmarks"
