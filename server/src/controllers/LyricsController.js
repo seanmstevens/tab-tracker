@@ -68,12 +68,14 @@ module.exports = {
       let lyricsUrl
       const lyrics = await genius.fetchSongUrl(songTitle, artistName)
         .then(url => {
+          if (!url) {
+            return res.status(500).send({
+              error: `Unable to find a match for "${artistName} - ${songTitle}"`
+            })
+          }
+
           lyricsUrl = url
           return genius.getSongLyrics(url)
-        })
-        .catch(err => {
-          res.status(500).send({ error: `Unable to find a match for "${artistName} - ${songTitle}"` })
-          console.log('inFetchLyrics', err)
         })
 
       res.send({
@@ -81,7 +83,6 @@ module.exports = {
         url: lyricsUrl
       })
     } catch (err) {
-      console.log(err)
       res.status(500).send({
         error: 'Unable to fetch lyrics.'
       })

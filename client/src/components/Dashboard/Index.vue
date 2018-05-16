@@ -1,8 +1,20 @@
 <template>
   <v-container fluid fill-height>
-    <v-layout>
-      <v-flex xs12 sm8 md6 lg4 class="mx-auto">
-        <songs-panel />
+    <v-layout row wrap justify-space-around>
+      <v-flex xs12 sm8 md6 lg4>
+        <v-container :class="$vuetify.breakpoint.xs ? 'pa-0' : null">
+          <songs-panel></songs-panel>
+        </v-container>
+      </v-flex>
+      <v-flex xs12 sm8 md6 lg4>
+        <v-container :class="$vuetify.breakpoint.xs ? 'pa-0' : null">
+          <bookmarks></bookmarks>
+        </v-container>
+      </v-flex>
+      <v-flex xs12 sm8 md6 lg4>
+        <v-container :class="$vuetify.breakpoint.xs ? 'pa-0' : null">
+          <recently-viewed></recently-viewed>
+        </v-container>
       </v-flex>
     </v-layout>
   </v-container>
@@ -10,6 +22,8 @@
 
 <script>
 import SongsPanel from './SongsPanel'
+import Bookmarks from './Bookmarks'
+import RecentlyViewed from './RecentlyViewed'
 
 export default {
   data () {
@@ -18,7 +32,9 @@ export default {
     }
   },
   components: {
-    SongsPanel
+    SongsPanel,
+    Bookmarks,
+    RecentlyViewed
   }
 }
 </script>

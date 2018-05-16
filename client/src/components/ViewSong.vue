@@ -34,7 +34,7 @@
                 {{song.title}}
               </h3>
               <v-spacer v-if="$vuetify.breakpoint.xs"></v-spacer>
-              <v-menu bottom left class="no-grow">
+              <v-menu bottom left class="no-grow" transition="none">
                 <v-btn slot="activator" flat dark fab small middle>
                   <v-icon medium>more_vert</v-icon>
                 </v-btn>
@@ -158,7 +158,7 @@
       :left="!$vuetify.breakpoint.xs"
       v-model="snackbar"
     >
-    Song updated
+    {{ snackbarText }}
       <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </div>
@@ -169,6 +169,7 @@ import { mapState } from 'vuex'
 import SongsService from '@/services/SongsService'
 import LyricsService from '@/services/LyricsService'
 import BookmarksService from '@/services/BookmarksService'
+import SongHistoryService from '@/services/SongHistoryService'
 import UpdateSongDialog from './UpdateSong'
 
 export default {
@@ -185,12 +186,14 @@ export default {
       dialog: false,
       snackbar: false,
       gradient: 'to top right, rgba(63,81,181, .7), rgba(25,32,72, .7)',
-      bookmark: null
+      bookmark: null,
+      snackbarText: null
     }
   },
   computed: {
     ...mapState([
-      'isUserLoggedIn'
+      'isUserLoggedIn',
+      'user'
     ])
   },
   watch: {
@@ -206,10 +209,18 @@ export default {
 
     if (this.isUserLoggedIn) {
       try {
-        this.bookmark = (await BookmarksService.index({
-          songId: this.$store.state.route.params.songId,
-          userId: this.$store.state.user.id
+        const songId = this.$store.state.route.params.songId
+        const bookmarks = (await BookmarksService.index({
+          songId: songId
         })).data
+
+        if (bookmarks.length) {
+          this.bookmark = bookmarks[0]
+        }
+
+        SongHistoryService.post({
+          songId: songId
+        })
       } catch (err) {
         console.log(err)
       }
@@ -224,6 +235,7 @@ export default {
       this.song = data
       this.dialog = false
       this.snackbar = true
+      this.snackbarText = 'Song updated'
     },
     async fetchLyrics () {
       try {
@@ -246,9 +258,10 @@ export default {
     async bookmarkSong () {
       try {
         this.bookmark = (await BookmarksService.post({
-          songId: this.song.id,
-          userId: this.$store.state.user.id
+          songId: this.song.id
         })).data
+        this.snackbar = true
+        this.snackbarText = 'Song added to bookmarks'
       } catch (err) {
         console.log(err)
       }
@@ -257,6 +270,8 @@ export default {
       try {
         await BookmarksService.delete(this.bookmark.id)
         this.bookmark = null
+        this.snackbar = true
+        this.snackbarText = 'Song removed from bookmarks'
       } catch (err) {
         console.log(err)
       }

@@ -18,7 +18,7 @@
         flat
         dark
         :to="{name: 'songs'}">
-        <span>Browse</span>
+        <span>Dashboard</span>
       </v-btn>
       <v-btn
         v-if="$vuetify.breakpoint.smAndUp"
