@@ -4,10 +4,13 @@
       v-if="$vuetify.breakpoint.smAndDown"
       @click="openDrawer">
     </v-toolbar-side-icon>
-    <v-toolbar-title
-      @click="navigateTo({name: 'root'})"
+    <v-toolbar-title>
+      <router-link
+      :to="{ name: 'songs' }"
+      tag="span"
       class="home mr-4">
       TabTracker
+      </router-link>
     </v-toolbar-title>
     <v-toolbar-items>
       <v-btn
@@ -59,9 +62,6 @@
 <script>
 export default {
   methods: {
-    navigateTo (route) {
-      this.$router.push(route)
-    },
     openDialog () {
       this.$store.dispatch('toggleCreateSongDialog')
     },
@@ -73,7 +73,7 @@ export default {
       this.$store.dispatch('setUser', null)
 
       this.$router.push({
-        name: 'root'
+        name: 'songs'
       })
     }
   }

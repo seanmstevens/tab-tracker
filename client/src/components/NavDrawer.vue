@@ -4,7 +4,7 @@
     fixed
     app>
     <v-list>
-      <v-list-tile exact :to="{ name: 'root' }" ripple>
+      <v-list-tile exact :to="{ name: 'songs' }" ripple>
         <v-list-tile-action>
           <v-icon>home</v-icon>
         </v-list-tile-action>

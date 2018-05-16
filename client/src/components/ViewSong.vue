@@ -40,10 +40,16 @@
                 </v-btn>
                 <v-list>
                   <v-list-tile ripple @click="dialog = true">
+                    <v-icon small class="mr-2">edit</v-icon>
                     <v-list-tile-title>Edit</v-list-tile-title>
                   </v-list-tile>
-                  <v-list-tile ripple>
+                  <v-list-tile v-if="isUserLoggedIn && !bookmark" ripple @click="bookmarkSong">
+                    <v-icon small class="mr-2">book</v-icon>
                     <v-list-tile-title>Bookmark</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile v-if="isUserLoggedIn && bookmark" ripple @click="unbookmarkSong">
+                    <v-icon small class="mr-2">remove_circle</v-icon>
+                    <v-list-tile-title>Unbookmark</v-list-tile-title>
                   </v-list-tile>
                 </v-list>
               </v-menu>
@@ -159,8 +165,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import SongsService from '@/services/SongsService'
 import LyricsService from '@/services/LyricsService'
+import BookmarksService from '@/services/BookmarksService'
 import UpdateSongDialog from './UpdateSong'
 
 export default {
@@ -176,8 +184,14 @@ export default {
       lyricsFetchError: null,
       dialog: false,
       snackbar: false,
-      gradient: 'to top right, rgba(63,81,181, .7), rgba(25,32,72, .7)'
+      gradient: 'to top right, rgba(63,81,181, .7), rgba(25,32,72, .7)',
+      bookmark: null
     }
+  },
+  computed: {
+    ...mapState([
+      'isUserLoggedIn'
+    ])
   },
   watch: {
     '$route' (to, from) {
@@ -189,6 +203,17 @@ export default {
   async mounted () {
     this.setInitialView()
     this.setPlayerHeight()
+
+    if (this.isUserLoggedIn) {
+      try {
+        this.bookmark = (await BookmarksService.index({
+          songId: this.$store.state.route.params.songId,
+          userId: this.$store.state.user.id
+        })).data
+      } catch (err) {
+        console.log(err)
+      }
+    }
   },
   methods: {
     async setInitialView () {
@@ -201,8 +226,8 @@ export default {
       this.snackbar = true
     },
     async fetchLyrics () {
-      if (!this.song.lyrics && !this.fetchingLyrics) {
-        try {
+      try {
+        if (!this.song.lyrics && !this.retrievedLyrics.lyrics && !this.fetchingLyrics) {
           this.fetchingLyrics = true
           const { title, artist } = this.song
           const { lyrics, url } = (await LyricsService.fetchLyrics(title, artist)).data
@@ -211,11 +236,29 @@ export default {
           this.retrievedLyrics.url = url
 
           this.lyricsFetchError = null
-        } catch (err) {
-          this.lyricsFetchError = 'Unable to retrieve lyrics'
         }
+      } catch (err) {
+        this.lyricsFetchError = 'Unable to retrieve lyrics'
+      }
 
-        this.fetchingLyrics = false
+      this.fetchingLyrics = false
+    },
+    async bookmarkSong () {
+      try {
+        this.bookmark = (await BookmarksService.post({
+          songId: this.song.id,
+          userId: this.$store.state.user.id
+        })).data
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async unbookmarkSong () {
+      try {
+        await BookmarksService.delete(this.bookmark.id)
+        this.bookmark = null
+      } catch (err) {
+        console.log(err)
       }
     },
     setPlayerHeight () {

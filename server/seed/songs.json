@@ -1,0 +1,46 @@
+[
+  {
+    "title": "Fight the Power",
+    "artist": "Public Enemy",
+    "genre": "Hip-Hop",
+    "album": "Fear of a Black Planet",
+    "albumImageUrl": "https://samepageteam.files.wordpress.com/2015/04/public_enemy_-_1990_fear_of_a_black_planet.jpeg",
+    "youtubeUrl": "https://www.youtube.com/watch?v=8PaoLy7PHwk",
+    "youtubeId": "8PaoLy7PHwk",
+    "lyrics": null,
+    "tab": null
+  },
+  {
+    "title": "Shadow Man",
+    "artist": "Noname",
+    "genre": "Hip-Hop",
+    "album": "Telefone",
+    "albumImageUrl": "https://complex-res.cloudinary.com/images/c_limit,f_auto,fl_lossy,q_auto,w_1030/noname-telefone_cover_t0hccp/noname-telefone_cover",
+    "youtubeUrl": "N0Gg4lMzezc",
+    "youtubeId": "N0Gg4lMzezc",
+    "lyrics": null,
+    "tab": null
+  },
+  {
+    "title": "Tightrope",
+    "artist": "Janelle Monáe",
+    "genre": "Pop/Funk",
+    "album": "The ArchAndroid",
+    "albumImageUrl": "http://static.idolator.com/uploads/2010/04/Janelle-Monae-The-ArchAndroid-album-cover.jpg",
+    "youtubeUrl": "https://www.youtube.com/watch?v=pwnefUaKCbc",
+    "youtubeId": "pwnefUaKCbc",
+    "lyrics": null,
+    "tab": null
+  },
+  {
+    "title": "Make Me Feel",
+    "artist": "Janelle Monáe",
+    "genre": "Pop/Funk",
+    "album": "Dirty Computer",
+    "albumImageUrl": "https://upload.wikimedia.org/wikipedia/en/0/0b/DirtyComputer.png",
+    "youtubeUrl": "https://www.youtube.com/watch?v=tGRzz0oqgUE",
+    "youtubeId": "tGRzz0oqgUE",
+    "lyrics": "",
+    "tab": ""
+  }
+]
