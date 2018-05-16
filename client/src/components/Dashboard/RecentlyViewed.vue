@@ -7,40 +7,53 @@
       dark>
       <v-icon>refresh</v-icon>
       <v-toolbar-title>Viewing History</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>search</v-icon>
-      </v-btn>
     </v-toolbar>
-    <v-data-iterator
-      :items="songs"
-      :pagination.sync="pagination"
-      no-data-text="No bookmarks found"
-      content-tag="v-list"
-      three-line>
-      <template slot="item" slot-scope="props">
-        <v-divider v-if="props.index !== 0" inset></v-divider>
-        <v-list-tile
-          :key="props.item.id"
-          ripple
-          :to="{
-            name: 'song',
-            params: {
-              songId: props.item.SongId
-            }
-          }"
-          avatar>
-          <v-list-tile-avatar tile>
-            <img :src="props.item.albumImageUrl" />
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title v-html="props.item.title"></v-list-tile-title>
-            <v-list-tile-sub-title v-html="props.item.artist"></v-list-tile-sub-title>
-            <v-list-tile-sub-title v-html="props.item.album"></v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </template>
-    </v-data-iterator>
+    <transition name="fade" mode="out-in">
+      <v-flex
+        key="loader"
+        v-if="fetchingHistory"
+        xs4
+        class="mx-auto py-3">
+        <v-layout column align-center>
+          <v-progress-circular
+            class="mb-2"
+            :width="3"
+            indeterminate
+            color="light-green" />
+          <small class="fetch-text">Fetching history...</small>
+        </v-layout>
+      </v-flex>
+      <v-data-iterator
+        v-else
+        key="songs"
+        :items="songs"
+        :pagination.sync="pagination"
+        no-data-text="No bookmarks found"
+        content-tag="v-list"
+        two-line>
+        <template slot="item" slot-scope="props">
+          <v-divider v-if="props.index !== 0" inset></v-divider>
+          <v-list-tile
+            :key="props.item.id"
+            ripple
+            :to="{
+              name: 'song',
+              params: {
+                songId: props.item.SongId
+              }
+            }"
+            avatar>
+            <v-list-tile-avatar tile>
+              <img :src="props.item.albumImageUrl" class="small-album-preview"/>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title v-html="props.item.title"></v-list-tile-title>
+              <v-list-tile-sub-title v-html="props.item.artist"></v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </template>
+      </v-data-iterator>
+    </transition>
   </v-card>
 </template>
 
@@ -51,6 +64,7 @@ import SongHistoryService from '@/services/SongHistoryService'
 export default {
   data () {
     return {
+      fetchingHistory: true,
       pagination: {
         sortBy: 'createdAt',
         descending: true
@@ -67,6 +81,8 @@ export default {
     if (this.isUserLoggedIn) {
       this.songs = (await SongHistoryService.index()).data
     }
+
+    this.fetchingHistory = false
   }
 }
 </script>

@@ -316,15 +316,6 @@ export default {
   background-position-y: center;
 }
 
-.no-grow {
-  flex-grow: 0 !important;
-}
-
-.fetch-text {
-  font-weight: 500;
-  color: #757575;
-}
-
 .lyrics {
   white-space: pre-wrap;
   padding: 1rem;

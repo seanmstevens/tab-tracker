@@ -52,4 +52,17 @@ export default {
 .text--black-translucent {
   color: rgba(0, 0, 0, 0.7);
 }
+
+.no-grow {
+  flex-grow: 0 !important;
+}
+
+.fetch-text {
+  font-weight: 500;
+  color: #757575;
+}
+
+.small-album-preview {
+  border-radius: 2px !important;
+}
 </style>
